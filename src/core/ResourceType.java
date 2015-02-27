@@ -1,3 +1,5 @@
+package core;
+
 public enum ResourceType{
    WARM_UP,
    TEACHER_NOTE,

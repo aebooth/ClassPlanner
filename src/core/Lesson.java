@@ -1,20 +1,29 @@
+package core;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 public class Lesson{
 
-private static long int numLessons = 0;
-private long int id;
+private static long numLessons = 0;
+private long id;
 private String title;
 private Map<ResourceType,List<URL>> resources;
 private List<String> metaNotes;
 
 
-public Lesson(String title)
+public Lesson(String title){
    this.title = title;
    resources = new HashMap<>();
    
    metaNotes = new ArrayList<>();
    
    for(ResourceType type:ResourceType.values()){
-      resources.add(type,new LinkedList<>());
+      resources.put(type,new LinkedList<>());
    }
    
    this.id = numLessons;
@@ -22,11 +31,12 @@ public Lesson(String title)
 }
 
 public void add(URL url, ResourceType type){
-   resources.add(type, url);
+   if(!resources.get(type).stream().anyMatch(u -> u.equals(url)))
+           resources.get(type).add(url);
 }
 
 public void remove(URL url){
-   resources.forEach((k,v)->if(v.contains(url)){v.removeFirst(url)});
+   resources.forEach((k,v)->v.remove(url));
 }
 
 public List<URL> currentResources(){
@@ -37,7 +47,9 @@ public List<URL> currentResources(){
 
 public List<ResourceType> missingResourceTypes(){
    LinkedList<ResourceType> types = new LinkedList<>();
-   resources.forEach((k,v)->if(v.size() == 0){types.add(k)});
+   for(Map.Entry pair:this.resources.entrySet())
+       if(((List<URL>)pair.getValue()).isEmpty())
+           types.add((ResourceType)pair.getKey());
    return types;
 }
 
