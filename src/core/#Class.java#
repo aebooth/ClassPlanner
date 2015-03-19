@@ -18,7 +18,7 @@ import java.nio.file.Paths;
  *
  * @author alex
  */
-public class Class implements Serializable {
+public class Course implements Serializable {
     private String classDirectory;
     private ArrayList<Unit> units;
     private ArrayList<String> notes;

@@ -1,6 +1,5 @@
 package core;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,8 +11,8 @@ public class Lesson{
 private static long numLessons = 0;
 private long id;
 private String title;
-private Map<ResourceType,List<URL>> resources;
-private List<String> metaNotes;
+private final Map<ResourceType,List<String>> resources;
+private final List<String> metaNotes;
 
 
 public Lesson(String title){
@@ -30,27 +29,37 @@ public Lesson(String title){
    numLessons++;
 }
 
-public void add(URL url, ResourceType type){
-   if(!resources.get(type).stream().anyMatch(u -> u.equals(url)))
-           resources.get(type).add(url);
+public void add(String url, String type){
+   try{
+   if(!resources.get(ResourceType.valueOf(type)).stream().anyMatch(u -> u.equals(url)))
+           resources.get(ResourceType.valueOf(type)).add(url);
+}
+catch(IllegalArgumentException e){
+    System.out.println(type + " is not a valid resource type.");
+}
+    
 }
 
-public void remove(URL url){
+public void remove(String url){
    resources.forEach((k,v)->v.remove(url));
 }
 
-public List<URL> currentResources(){
-   LinkedList<URL> urls = new LinkedList<>();
+public List<String> currentResources(){
+   LinkedList<String> urls = new LinkedList<>();
    resources.forEach((k,v)->urls.addAll(v));
    return urls;
 }
 
-public List<ResourceType> missingResourceTypes(){
-   LinkedList<ResourceType> types = new LinkedList<>();
+public List<String> missingResourceTypes(){
+   LinkedList<String> types = new LinkedList<>();
    for(Map.Entry pair:this.resources.entrySet())
-       if(((List<URL>)pair.getValue()).isEmpty())
-           types.add((ResourceType)pair.getKey());
+       if(((List<String>)pair.getValue()).isEmpty())
+           types.add(((ResourceType)pair.getKey()).toString());
    return types;
+}
+
+public String getTitle(){
+    return this.title;
 }
 
 public void setTitle(String title){
@@ -65,9 +74,22 @@ public void scratchNote(int index){
    if(index < metaNotes.size() && index >= 0){
       metaNotes.remove(index);
    }
-   else throw new IllegalArgumentException("Scratch failed: That index dos not point to a note!");
+   else System.out.println(index + " is an invalid index");
 }
 
+private enum ResourceType{
+   WARM_UP,
+   TEACHER_NOTE,
+   STUDENT_NOTE,
+   PLAN,
+   HW_ASSIGNMENT,
+   HW_KEY,
+   HW_AID,
+   PRESENTATION,
+   QUIZ,
+   DEMO,
+   LAB_SHEET;
+}
 
 }
 
