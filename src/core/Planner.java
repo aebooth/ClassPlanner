@@ -49,7 +49,8 @@ public class Planner {
     
     public boolean checkInput() throws IOException{
         String line = this.ears.readLine();
-        switch(line){
+        String[] tokens = line.split(" ");
+        switch(tokens[0]){
             case "":
                 this.status = "";
                 this.prompt();
@@ -61,6 +62,10 @@ public class Planner {
             default:
                 return true;
         }
+    }
+    
+    public void _new(String[] args){
+    
     }
     
     public static void main(String[] args){
