@@ -7,6 +7,8 @@ package core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.nio.file.Files;
 /**
  *
  * @author alex
@@ -15,6 +17,7 @@ public class Planner {
     private BufferedReader ears;
     private String workspace;
     private String status;
+    private ArrayList<Object> buffer;
     
     public void prompt(){
         if(!workspace.equals("")){
@@ -57,7 +60,20 @@ public class Planner {
                 return true;
             
             case "new":
+                _new(tokens);
                 return true;
+                
+            case "add":
+                add(tokens);
+                return true;  
+                
+             case "remove":
+                remove(tokens);
+                return true;  
+                
+             case "edit":
+                edit(tokens);
+                return true; 
                 
             default:
                 return true;
@@ -65,6 +81,21 @@ public class Planner {
     }
     
     public void _new(String[] args){
+        switch(args[1]){
+            case "course":
+                
+        }
+    }
+    
+    public void add(String[] args){
+    
+    }
+    
+    public void remove(String[] args){
+    
+    }
+    
+    public void edit(String[] args){
     
     }
     
