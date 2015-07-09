@@ -1,0 +1,14 @@
+Table 1
+Day Key (primary) | Day Number | Date
+
+Table 2
+Unit Key (primary) | Unit Name
+
+Table 3
+Day Key (foreign,unique) | Unit Key (foreign)
+
+Table 4
+Day Key (foreign,unique) | Description
+
+Table 5
+Day key (foreign,non-unique) | Resource Name | Resource URL
