@@ -1,7 +1,4 @@
-from peewee import *
+import sqlite3
 
-db = SqliteDatabase()
-
-class PlanData():
-    def __init__(self,course_name):
-        TODO Figure out what a PlanData needs to look like
+def initialize_plan():
+    pass
