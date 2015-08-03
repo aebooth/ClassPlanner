@@ -1,0 +1,5 @@
+* Tasks for Future Programming
+** TODO make up landing page window and logic to handle it in main
+** TODO connect up buttons on each page to the main panel switcher function
+    SCHEDULED: <2015-07-31 Fri>
+*** TODO For the schedule init page button [[file:src/scheduler.py::pass][here]]

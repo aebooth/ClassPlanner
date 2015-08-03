@@ -1,21 +1,20 @@
 from gi.repository import Gtk
 import datetime
 
-
-class SchedulerInit:
+class SchedulerInit():
     def __init__(self):
         #Info variables
         self.school_year_name = ""
         self.start_date = None
         self.end_date = None
-        self.holidays = []
 
         #UI Helper variables. Wiring up signals
         builder = Gtk.Builder()
-        builder.add_from_file("SchedulerUI.glade")
+        builder.add_from_file("SchedulerInit.glade")
 
         self.panel = builder.get_object("main_box")
-
+        
+        self.dd_list = builder.get_object("schedules")
         self.schedule_dd = builder.get_object("schedule_dd")
         cell = Gtk.CellRendererText()
         self.schedule_dd.pack_start(cell,True)
@@ -43,63 +42,107 @@ class SchedulerInit:
         self.cal_win.show_all()
 
     def date(self,calendar,entry):
-        retval = str(calendar.get_date()[1])+"/"+ str(calendar.get_date()[2]) +"/" + str(calendar.get_date()[0])
-        calendar.get_parent().destroy()
+        retval = str(calendar.get_date()[1]+1)+"/"+ str(calendar.get_date()[2]) +"/" + str(calendar.get_date()[0])
         if entry.get_name() == "end":
             self.end_date = calendar.get_date()
         else:
             self.start_date = calendar.get_date()
-
+        calendar.get_parent().destroy()
+        calendar.destroy()
         if self.start_date is not None and  self.end_date is not None:
-            if self.start_date[0] <= self.end_date[0] and self.start_date[1] <= self.end_date[1] and self.start_date[2] < self.end_date[2]:
-                entry.set_text(retval)
-            else:
+            if self.start_date[0] > self.end_date[0]:
                 entry.set_text("")
-                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End date must come \n after start date!!")
+                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End year must come \n after start year!!")
                 dialog.run()
                 dialog.destroy()
+            elif self.start_date[1] > self.end_date[1]:
+                entry.set_text("")
+                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End month must come \n after start month (in same year)!!")
+                dialog.run()
+                dialog.destroy()
+            elif self.start_date[2] > self.end_date[2]:
+                entry.set_text("")
+                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End day must come \n after start day (in same month)!!")
+                dialog.run()
+                dialog.destroy()    
+            else:
+                entry.set_text(retval)
         else:
             entry.set_text(retval)
+        
     def get_days(self,button):
         if self.name_entry.get_text() == "":
             dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give school year a name!")
             dialog.run()
             dialog.destroy()
         else:
-            pass
+            days = Schedule(self.dd_list[self.schedule_dd.get_active_iter()][0],self.start_date,self.end_date)
+            self.panel.get_parent().change_panel("scheduler_days",days)
 
+            
+class SchedulerDays:
+    def __init__(self,schedule):
+        builder = Gtk.Builder()
+        builder.add_from_file("SchedulerDays.glade")
+        self.panel = builder.get_object("main_box")
+        self.schedule = schedule
+        self.liststore = Gtk.ListStore(str)#,bool)
+        
+        current_day = schedule.get_day_as_datetime(1)
+
+        i = 0##
+        while current_day.toordinal() <= schedule.get_last_day().toordinal():
+            #print(current_day.strftime("%A %d %B %Y"))##
+            self.liststore.append([current_day.strftime("%A %d %B %Y")])#,(current_day in schedule.get_days_as_datetime())])
+            current_day += datetime.timedelta(days=1)
+            print(self.liststore[self.liststore.get_iter(i)][0])##
+            i += 1##
+            
+        self.days_view = builder.get_object("days_view")
+        self.days_view.set_model(self.liststore)
+        day_label = Gtk.CellRendererText()
+        self.days_view.append_column(Gtk.TreeViewColumn("Date",day_label,text=0))
+        
+            
 class Schedule:
     def __init__(self,schedule_type,start_date,end_date):
-        self.days = []
-        start = datetime.date(self.start_date[0],self.start_date[1],self.start_date[2])
-        end = datetime.date(self.end_date[0],self.end_date[1],self.end_date[2])
+        self.__days = []
+        start = datetime.date(start_date[0],start_date[1],start_date[2])
+        end = datetime.date(end_date[0],end_date[1],end_date[2])
         day = start
         if schedule_type == "Traditional":
-            delta = datetime.timedelta(days=1)
-            while day is not end:
+            while day.toordinal() <= end.toordinal():
                 if day.weekday() < 5:
-                    self.days.append(day)
-                day = day + delta
-
+                    self.__days.append(day)
+                day += datetime.timedelta(days=1)
         elif schedule_type == "Block":
-            delta = datetime.timedelta(days=2)
-            while day is not end:
+            while day.toordinal() <= end.toordinal():
                 if day.weekday() < 5:
-                    self.days.append(day)
-                day = day + delta
+                    self.__days.append(day)
+                day += datetime.timedelta(days=2)
 
-    def get_days_as_datetime():
-        return self.days
+    def get_days_as_datetime(self):
+        return self.__days
 
 
-    def get_day_as_datetime(day_num):
-        return self.days[day_num-1]
+    def get_day_as_datetime(self,day_num):
+        return self.__days[day_num-1]
 
-    def get_days_as_string():
+    def get_days_as_string(self):
         ret = []
-        for day in self.days:
+        for day in self.__days:
             ret.append(day.strftime("%A %d %B %Y"))
         return ret
 
-    def get_day_as_string(day_num):
+    def get_day_as_string(self,day_num):
         return self.days[day_num-1].strftime("%A %d %B %Y")
+
+    def add_day_from_string(self,day_string):
+        brand_new_day = datetime.strptime(day_string,"%A %d %B %Y")
+        day_num = len(self.__days) - 1
+        while day_num > 0 and self.__days[day_num].toordinal() > brand_new_day.toordinal():
+            day_num = day_num - 1
+        self.__days.insert(day_num + 1,brand_new_day)
+
+    def get_last_day(self):
+        return self.__days[len(self.__days)-1]
