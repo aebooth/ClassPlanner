@@ -4,7 +4,6 @@ import datetime
 class SchedulerInit():
     def __init__(self):
         #Info variables
-        self.school_year_name = ""
         self.start_date = None
         self.end_date = None
 
@@ -19,8 +18,6 @@ class SchedulerInit():
         cell = Gtk.CellRendererText()
         self.schedule_dd.pack_start(cell,True)
         self.schedule_dd.add_attribute(cell,'text',0)
-
-        self.name_entry = builder.get_object("name_entry")
 
         self.start_entry = builder.get_object("start_entry")
         self.start_entry.connect("icon-press",self.pick_a_date)
@@ -71,8 +68,12 @@ class SchedulerInit():
             entry.set_text(retval)
         
     def get_days(self,button):
-        if self.name_entry.get_text() == "":
-            dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give school year a name!")
+        if self.start_entry.get_text() == "":
+            dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give a start date!")
+            dialog.run()
+            dialog.destroy()
+        elif self.end_entry.get_text() == "":
+            dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give an end date!")
             dialog.run()
             dialog.destroy()
         else:
@@ -82,26 +83,48 @@ class SchedulerInit():
             
 class SchedulerDays:
     def __init__(self,schedule):
-        builder = Gtk.Builder()
-        builder.add_from_file("SchedulerDays.glade")
-        self.panel = builder.get_object("main_box")
+        #builder = Gtk.Builder()
+        #builder.add_from_file("SchedulerDays.glade")
+        self.panel = Gtk.VBox(border_width=10)
+        self.panel.set_homogeneous(False)
+        #self.panel = builder.get_object("main_box")
         self.schedule = schedule
-        self.liststore = Gtk.ListStore(str)#,bool)
-        
-        current_day = schedule.get_day_as_datetime(1)
 
-        i = 0##
-        while current_day.toordinal() <= schedule.get_last_day().toordinal():
-            #print(current_day.strftime("%A %d %B %Y"))##
-            self.liststore.append([current_day.strftime("%A %d %B %Y")])#,(current_day in schedule.get_days_as_datetime())])
+        self.scrollpane = Gtk.ScrolledWindow()
+
+        self.liststore = Gtk.ListStore(str,bool)
+
+        self.days_view = Gtk.TreeView(self.liststore)
+        
+        current_day = schedule.get_day_as_datetime(1)-datetime.timedelta(days=10)
+
+        while current_day.toordinal() <= schedule.get_last_day().toordinal()+datetime.timedelta(days=10):
+            self.liststore.append([current_day.strftime("%A %d %B %Y"),(current_day in schedule.get_days_as_datetime())])
             current_day += datetime.timedelta(days=1)
-            print(self.liststore[self.liststore.get_iter(i)][0])##
-            i += 1##
-            
-        self.days_view = builder.get_object("days_view")
-        self.days_view.set_model(self.liststore)
+        
         day_label = Gtk.CellRendererText()
         self.days_view.append_column(Gtk.TreeViewColumn("Date",day_label,text=0))
+
+        day_toggle = Gtk.CellRendererToggle()
+        self.days_view.append_column(Gtk.TreeViewColumn("Included",day_toggle,active=1))
+        day_toggle.connect("toggled",self.toggle_days)
+
+        self.button = Gtk.Button("Finish Schedule")
+        self.button.connect("clicked",self.on_button_clicked)
+
+        self.panel.pack_start(Gtk.Label("Days"),True,True,10)
+        
+        self.scrollpane.add(self.days_view)
+        self.scrollpane.set_size_request(200,400)
+        self.panel.pack_start(self.scrollpane,True,True,10)
+
+        self.panel.pack_start(self.button,True,True,10)
+
+    def on_button_clicked(self,button):
+        pass
+        
+    def toggle_days(self,wigdet,path):
+        self.liststore[path][1] = not self.liststore[path][1]
         
             
 class Schedule:
