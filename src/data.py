@@ -1,9 +1,29 @@
-import schedule
+import datetime
+import scheduler
+import sqlite3
 
-class Data:
-    def __init__(self,schedule=None):
-        self.days = {}
-        if schedule is not None:
-            index = 0
-            for day in schedule:
-                self.days[index] = day.strftime("%A %d %B %Y")
+class MetaData:
+    def __init__(self,project_path):
+        self.schedule = None
+        self.lesson_resource_map = {}
+        self.lesson_date_map = {}
+        self.last_unique_lesson_index = 0
+        self.project_path = project_path
+
+    def add_tag(self,tag,lesson_id):
+        pass
+
+    def remove_tag(self,tag,lesson_id):
+        pass
+
+    def edit_long_description(self,text,lesson_id):
+        pass
+
+    def edit_short_description(self,text,lesson_id):
+        pass
+
+    def save_all(self):
+        pass
+
+    def load_all(self,plan_path):
+        pass

@@ -49,17 +49,17 @@ class SchedulerInit():
         if self.start_date is not None and  self.end_date is not None:
             if self.start_date[0] > self.end_date[0]:
                 entry.set_text("")
-                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End year must come \n after start year!!")
+                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End year must come \n after start year!!")
                 dialog.run()
                 dialog.destroy()
             elif self.start_date[1] > self.end_date[1]:
                 entry.set_text("")
-                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End month must come \n after start month (in same year)!!")
+                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End month must come \n after start month (in same year)!!")
                 dialog.run()
                 dialog.destroy()
             elif self.start_date[2] > self.end_date[2]:
                 entry.set_text("")
-                dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End day must come \n after start day (in same month)!!")
+                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End day must come \n after start day (in same month)!!")
                 dialog.run()
                 dialog.destroy()    
             else:
@@ -69,11 +69,11 @@ class SchedulerInit():
         
     def get_days(self,button):
         if self.start_entry.get_text() == "":
-            dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give a start date!")
+            dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give a start date!")
             dialog.run()
             dialog.destroy()
         elif self.end_entry.get_text() == "":
-            dialog = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give an end date!")
+            dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give an end date!")
             dialog.run()
             dialog.destroy()
         else:
@@ -83,11 +83,8 @@ class SchedulerInit():
             
 class SchedulerDays:
     def __init__(self,schedule):
-        #builder = Gtk.Builder()
-        #builder.add_from_file("SchedulerDays.glade")
         self.panel = Gtk.VBox(border_width=10)
         self.panel.set_homogeneous(False)
-        #self.panel = builder.get_object("main_box")
         self.schedule = schedule
 
         self.scrollpane = Gtk.ScrolledWindow()
@@ -98,7 +95,7 @@ class SchedulerDays:
         
         current_day = schedule.get_day_as_datetime(1)-datetime.timedelta(days=10)
 
-        while current_day.toordinal() <= schedule.get_last_day().toordinal()+datetime.timedelta(days=10):
+        while current_day.toordinal() <= (schedule.get_last_day()+datetime.timedelta(days=10)).toordinal():
             self.liststore.append([current_day.strftime("%A %d %B %Y"),(current_day in schedule.get_days_as_datetime())])
             current_day += datetime.timedelta(days=1)
         

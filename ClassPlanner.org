@@ -1,5 +1,32 @@
+
 * Tasks for Future Programming
-** TODO make up landing page window and logic to handle it in main
+** DONE make up landing page window and logic to handle it in main
+   CLOSED: [2015-08-08 Sat 01:46]
+   - CLOSING NOTE [2015-08-08 Sat 01:46] \\
+     This is done, but I put all of these type windows in transitions.py
 ** TODO connect up buttons on each page to the main panel switcher function
     SCHEDULED: <2015-07-31 Fri>
-*** TODO For the schedule init page button [[file:src/scheduler.py::pass][here]]
+*** DONE For the schedule init page button [[file:src/scheduler.py::pass][here]]
+    CLOSED: [2015-08-04 Tue 22:25]
+    - CLOSING NOTE [2015-08-04 Tue 22:25]
+** TODO make a way to save all of the metadata in a project folder with all of your worksheet files
+*** DONE figure out file selector dialog boxes
+    CLOSED: [2015-08-07 Fri 08:00]
+    - CLOSING NOTE [2015-08-07 Fri 08:00] \\
+      GTK's FileChooserDialog does this in a pretty straightforward way although some custom validation code will be needed to ensure that I am dealing with the right kind of folder
+*** TODO wire it all up with the main landing page
+
+** TODO make a dist folder with all of the necessary files to distribute this program to the the 3 big desktop platforms
+** TODO make a bin folder where all of the finished executables reside
+* Feature Requests
+** TODO the ability to export lessons or certain date periods as HTML
+** TODO export schedule as .schedule file
+
+** TODO the ability to rearrange lesson dates
+* Bugs
+** TODO fix the calendar so that you can choose days in different years without problems
+** TODO figure out how to get rid of the stock button warnings
+
+* Refactoring
+** TODO fix the panel switcher so that passing data is no longer necessary
+   -this may require reorganizing schedule initialization
