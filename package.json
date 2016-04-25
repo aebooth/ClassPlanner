@@ -1,0 +1,16 @@
+{
+  "name": "teacherplanner",
+  "main": "index.html",
+  "version": "1.0.0",
+  "description": "ERROR: No README data found!",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.5.5",
+    "angularjs": "0.0.1",
+    "bootstrap": "^3.3.6"
+  }
+}
