@@ -1,7 +1,16 @@
 from gi.repository import Gtk
 import scheduler
-import transitions
+import start_up
 
+"""
+This is the jump-off point for this entire application
+The app is divided into 3 time-periods:
+1) Setting up a plan/selecting a plan file
+2) Editing days within an existing plan
+3) Viewing a plan via a dashboard that tracks it in real
+   time and allows for printing of the plan using html
+   and css.
+"""
 
 class MainWindow(Gtk.Window):
     def __init__(self):
@@ -25,8 +34,8 @@ class MainWindow(Gtk.Window):
 
     def check_for_save(self,window,event):
         Gtk.main_quit()
-            
+
 win = MainWindow()
-win.add(transitions.StartUpLanding().panel)
+win.add(start_up.StartUpLanding().panel)
 win.show_all()
 Gtk.main()

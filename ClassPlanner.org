@@ -1,4 +1,5 @@
-
+* Open Tasks
+** TODO 
 * Tasks for Future Programming
 ** DONE make up landing page window and logic to handle it in main
    CLOSED: [2015-08-08 Sat 01:46]

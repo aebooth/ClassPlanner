@@ -34,46 +34,34 @@ class SchedulerInit():
             self.cal_win.destroy()
         self.cal_win = Gtk.Window(title="Choose a day")
         cal = Gtk.Calendar()
-        cal.connect("day-selected-double-click",self.date,entry)
+        cal.connect("day-selected-double-click",self.on_calendar_select,entry)
         self.cal_win.add(cal)
         self.cal_win.show_all()
 
-    def date(self,calendar,entry):
-        retval = str(calendar.get_date()[1]+1)+"/"+ str(calendar.get_date()[2]) +"/" + str(calendar.get_date()[0])
+    def on_calendar_select(self,calendar,entry):
+        date = calendar.get_date()
+        retval = str(date[1]+1)+"/"+ str(date[2]) +"/" + str(date[0])
         if entry.get_name() == "end":
-            self.end_date = calendar.get_date()
+            self.end_date = datetime.date(date[0],date[1]+1,date[2])
         else:
-            self.start_date = calendar.get_date()
+            self.start_date = datetime.date(date[0],date[1]+1,date[2])
         calendar.get_parent().destroy()
         calendar.destroy()
-        if self.start_date is not None and  self.end_date is not None:
-            if self.start_date[0] > self.end_date[0]:
-                entry.set_text("")
-                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End year must come \n after start year!!")
-                dialog.run()
-                dialog.destroy()
-            elif self.start_date[1] > self.end_date[1]:
-                entry.set_text("")
-                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End month must come \n after start month (in same year)!!")
-                dialog.run()
-                dialog.destroy()
-            elif self.start_date[2] > self.end_date[2]:
-                entry.set_text("")
-                dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End day must come \n after start day (in same month)!!")
-                dialog.run()
-                dialog.destroy()    
-            else:
-                entry.set_text(retval)
-        else:
-            entry.set_text(retval)
+        entry.set_text(retval)
         
     def get_days(self,button):
-        if self.start_entry.get_text() == "":
+        if self.start_date is None:
             dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give a start date!")
             dialog.run()
             dialog.destroy()
-        elif self.end_entry.get_text() == "":
+        elif self.end_date is None:
             dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"Must give an end date!")
+            dialog.run()
+            dialog.destroy()
+        elif self.start_date.toordinal() > self.end_date.toordinal():
+            dialog = Gtk.MessageDialog(self.panel.get_parent(),Gtk.DialogFlags.MODAL,Gtk.MessageType.WARNING,Gtk.ButtonsType.OK,"End date must come \n after start date!!")
+            self.end_entry.set_text("")
+            self.end_date = None
             dialog.run()
             dialog.destroy()
         else:
@@ -127,16 +115,14 @@ class SchedulerDays:
 class Schedule:
     def __init__(self,schedule_type,start_date,end_date):
         self.__days = []
-        start = datetime.date(start_date[0],start_date[1],start_date[2])
-        end = datetime.date(end_date[0],end_date[1],end_date[2])
-        day = start
+        day = start_date
         if schedule_type == "Traditional":
-            while day.toordinal() <= end.toordinal():
+            while day.toordinal() <= end_date.toordinal():
                 if day.weekday() < 5:
                     self.__days.append(day)
                 day += datetime.timedelta(days=1)
         elif schedule_type == "Block":
-            while day.toordinal() <= end.toordinal():
+            while day.toordinal() <= end_date.toordinal():
                 if day.weekday() < 5:
                     self.__days.append(day)
                 day += datetime.timedelta(days=2)
